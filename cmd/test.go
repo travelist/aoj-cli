@@ -13,4 +13,5 @@ var testCmd = &cobra.Command{
 }
 
 var testCommand = func(command *cobra.Command, args []string) {
+
 }

@@ -7,6 +7,7 @@ import (
 	"golang.org/x/crypto/ssh/terminal"
 	"os"
 	"path/filepath"
+	"strings"
 	"syscall"
 	"text/template"
 )
@@ -27,9 +28,11 @@ var initCmd = &cobra.Command{
 var initCommand = func(command *cobra.Command, args []string) {
 	confDir := common.ConfigDirPath()
 
-	if e := os.Mkdir(confDir, 0700); e != nil {
-		fmt.Printf("Could not create a config directory: %s\n", e.Error())
-		return
+	if _, e := os.Stat(confDir); os.IsNotExist(e) {
+		if e := os.Mkdir(confDir, 0700); e != nil {
+			fmt.Printf("Could not create a config directory: %s\n", e.Error())
+			return
+		}
 	}
 
 	confFile := filepath.Join(confDir, "config.toml")
@@ -43,7 +46,7 @@ var initCommand = func(command *cobra.Command, args []string) {
 	}
 	defer file.Close()
 
-	tmpl := template.Must(template.ParseGlob(common.ConfigFileTemplate))
+	tmpl := template.Must(template.New("AOJConfig").Parse(common.ConfigFileTemplate))
 
 	lang, e := askLanguage()
 	if e != nil {
@@ -72,6 +75,8 @@ var initCommand = func(command *cobra.Command, args []string) {
 	}
 	defer templateFile.Close()
 	templateFile.Write([]byte(common.LanguageToDefaultTemplate[lang]))
+
+	fmt.Printf("Configuration is successfully generated under ~/.aoj-cli\n")
 }
 
 func ask(valid map[string]bool) (string, error) {
@@ -102,12 +107,13 @@ func ask(valid map[string]bool) (string, error) {
 func askLanguage() (string, error) {
 	validLang := map[string]bool{}
 
-	fmt.Printf("What is main language? (options)\n")
+	fmt.Printf("Coding language? [")
+	langs := []string{}
 	for _, v := range common.ValidLanguage {
 		validLang[v] = true
-		fmt.Printf("%s\n", v)
+		langs = append(langs, v)
 	}
-	fmt.Printf("\n")
+	fmt.Printf("%s]\n", strings.Join(langs, ","))
 
 	language, e := ask(validLang)
 	if e != nil {
@@ -118,7 +124,7 @@ func askLanguage() (string, error) {
 }
 
 func askUsername() (string, error) {
-	fmt.Printf("What is username?\n")
+	fmt.Printf("Username?\n")
 	var response string
 	if _, e := fmt.Scanln(&response); e != nil {
 		fmt.Printf("Unexpected const: %s\n", e.Error())
@@ -129,7 +135,7 @@ func askUsername() (string, error) {
 }
 
 func askPassword() (string, error) {
-	fmt.Printf("What is password?\n")
+	fmt.Printf("Password?\n")
 	pswd, e := terminal.ReadPassword(syscall.Stdin)
 	return string(pswd), e
 }
