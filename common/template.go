@@ -6,8 +6,8 @@ username = "{{.Username}}"
 password = "{{.Password}}"
 
 [gen]
-workspace_directory = "$HOME/common-workspace"
-source_file_name = "{{.GenSourceFileName}}"
+template_file = "$HOME/.aoj-cli/template.txt"
+destination_file_name = "{{.GenSourceFileName}}"
 
 [test]
 before_all="{{.TestBeforeAll}}"
