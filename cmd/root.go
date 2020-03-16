@@ -6,7 +6,7 @@ import (
 
 var (
 	rootCmd = &cobra.Command{
-		Use:   "aoj",
+		Use:   "common",
 		Short: "A command-line tool for Aizu Online Judge (AOJ)",
 	}
 )

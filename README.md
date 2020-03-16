@@ -1,11 +1,11 @@
-# aoj
+# AOJ CLI
 A command-line tool for Aizu Online Judge (AOJ)
 
 This is a primitive CLI tool for just doing 3 things:
 
-(1) Construct a project directory consisting of a boilerplate source code and sample test cases
-(2) Test your solution with the given sample cases
-(3) Submit the source code to AOJ system.
+- Construct a project directory consisting of a boilerplate source code and sample test cases
+- Test your solution with the sample cases
+- Submit the source code to AOJ System
 
 ## Installation
 
@@ -34,22 +34,24 @@ aoj submit (-f filenpath)
 
 ## Configuration
 
-default config path: `$HOME/.aoj/config.toml`
+Default config path: `~/.aoj/config.toml`
+Templates: `~/.aoj-cli/template.txt`
 
 ```toml
+[general]
+language = "cpp"
 username = "username"
 password = "password"
-language = "cpp"
 
 [gen]
 template_directory = "$HOME/.aoj/templates"
-workspace_directory = "/path/to/workspace/directory"
+workspace_directory = "$HOME/aoj-workspace"
 source_file_name = "main.cpp"
 
 [test]
-before_all=""
+before_all="g++ main.cpp -o a.out"
 before_each=""
-test_command=""
+command="a.out"
 after_each=""
 after_all=""
 
@@ -59,12 +61,11 @@ source_file_name = "main.cpp"
 
 | parameter| description |  |
 |----------|-------------|--|
-| username | Username | |
-| password | password | |
-| language | programming language | ex: `java`, `cpp` - See the list bellow. |
-| gen.template_directory | path to the template directory |  |
+| general.language | programming language | ex: `java`, `cpp` - See the list bellow. |
+| general.username | Username | |
+| general.password | password | |
 | gen.workspace_directory | path to a workspace | source files are generated under this directory |
-| gen.source_file_name | file name of source code | |
+| gen.source_file_name | file name of boilerplate source code | |
 | test.before_all | command to be executed once before all tests | |
 | test.before_each | command to be executed before each test | |
 | test.test_commands | command to execute a solution | |
@@ -72,6 +73,17 @@ source_file_name = "main.cpp"
 | test.after_all | command to be executed once after all tests | |
 | submit.source_file_name | source file to be submitted | |
 
+List of `general.language` candidates:
+
+- `c`
+- `cpp11`
+- `cpp14`
+- `cpp`
+- `java`
+- `py`
+- `py3`
+
 ## TODO
 
+[ ] Support available languages
 [ ] Remove username and password from configuration file (security)

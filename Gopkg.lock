@@ -121,9 +121,20 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:8d59aa6f03198132e0ca3bf998677f9698e1e27fc67976c85d85086ac3496530"
+  digest = "1:ad2bf20798504fbde0c5bdf5ee83d3354fb101d32c5b2267f811c1958b91b0ab"
+  name = "golang.org/x/crypto"
+  packages = ["ssh/terminal"]
+  pruneopts = "UT"
+  revision = "f7b00557c8c46a1ea4b035cae84f52028c2c0564"
+
+[[projects]]
+  branch = "master"
+  digest = "1:e32edd8d81fe0447cb6855e2d2b0549b63717539513e09b3a1e4bb20d48f46c6"
   name = "golang.org/x/sys"
-  packages = ["unix"]
+  packages = [
+    "unix",
+    "windows",
+  ]
   pruneopts = "UT"
   revision = "5c8b2ff67527cb88b770f693cebf3799036d8bc0"
 
@@ -164,6 +175,7 @@
   input-imports = [
     "github.com/spf13/cobra",
     "github.com/spf13/viper",
+    "golang.org/x/crypto/ssh/terminal",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
