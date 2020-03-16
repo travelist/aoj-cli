@@ -22,55 +22,57 @@ var InitCmd = &cobra.Command{
 	// 1. Generate a configuration directory ("~/.aoj-cli")
 	// 2. Generate a configuration file ("~/.aoj-cli/config.toml")
 	// 3. Generate a template file ("~/.aoj-cli/template.txt")
-	Run: func(command *cobra.Command, args []string) {
-		confDir := common.ConfigDirPath()
+	Run: initCommand,
+}
 
-		if e := os.Mkdir(confDir, os.ModeDir); e != nil {
-			fmt.Printf("Could not create a config directory: %s", e.Error())
-			return
-		}
+var initCommand = func(command *cobra.Command, args []string) {
+	confDir := common.ConfigDirPath()
 
-		confFile := filepath.Join(confDir, "config.toml")
+	if e := os.Mkdir(confDir, os.ModeDir); e != nil {
+		fmt.Printf("Could not create a config directory: %s", e.Error())
+		return
+	}
 
-		// TODO check the existence of the configuration file and ask the user whether to overwrite it or not.
+	confFile := filepath.Join(confDir, "config.toml")
 
-		file, e := os.OpenFile(confFile, os.O_RDWR|os.O_CREATE, 0755)
-		if e != nil {
-			fmt.Printf("Could not create/open a config file at %s : %s", confFile, e.Error())
-			return
-		}
-		defer file.Close()
+	// TODO check the existence of the configuration file and ask the user whether to overwrite it or not.
 
-		tmpl := template.Must(template.ParseGlob(common.ConfigFileTemplate))
+	file, e := os.OpenFile(confFile, os.O_RDWR|os.O_CREATE, 0755)
+	if e != nil {
+		fmt.Printf("Could not create/open a config file at %s : %s", confFile, e.Error())
+		return
+	}
+	defer file.Close()
 
-		lang, e := askLanguage()
-		if e != nil {
-			return
-		}
-		username, e := askUsername()
-		if e != nil {
-			return
-		}
+	tmpl := template.Must(template.ParseGlob(common.ConfigFileTemplate))
 
-		password, e := askPassword()
-		if e != nil {
-			return
-		}
+	lang, e := askLanguage()
+	if e != nil {
+		return
+	}
+	username, e := askUsername()
+	if e != nil {
+		return
+	}
 
-		param, _ := common.LanguageToDefaultConfigParam[lang]
-		param.Username = username
-		param.Password = password
-		tmpl.Execute(file, param)
+	password, e := askPassword()
+	if e != nil {
+		return
+	}
 
-		templateFilePath := common.TemplateFilePath()
-		templateFile, e := os.OpenFile(templateFilePath, os.O_RDWR|os.O_CREATE, 0755)
-		if e != nil {
-			fmt.Printf("Could not create/open a config file at %s : %s", templateFilePath, e.Error())
-			return
-		}
-		defer templateFile.Close()
-		templateFile.Write([]byte(common.LanguageToDefaultTemplate[lang]))
-	},
+	param, _ := common.LanguageToDefaultConfigParam[lang]
+	param.Username = username
+	param.Password = password
+	tmpl.Execute(file, param)
+
+	templateFilePath := common.TemplateFilePath()
+	templateFile, e := os.OpenFile(templateFilePath, os.O_RDWR|os.O_CREATE, 0755)
+	if e != nil {
+		fmt.Printf("Could not create/open a config file at %s : %s", templateFilePath, e.Error())
+		return
+	}
+	defer templateFile.Close()
+	templateFile.Write([]byte(common.LanguageToDefaultTemplate[lang]))
 }
 
 func ask(valid map[string]bool) (string, error) {

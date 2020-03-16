@@ -18,7 +18,7 @@ type AOJClient struct {
 	password    string
 }
 
-func NewAPIClient(endpointURL string, httpClient *http.Client) (*AOJClient, error) {
+func NewClient(endpointURL string, httpClient *http.Client) (*AOJClient, error) {
 	parsedURL, e := url.ParseRequestURI(endpointURL)
 
 	if e != nil {

@@ -73,7 +73,7 @@ source_file_name = "main.cpp"
 | test.after_all | command to be executed once after all tests | |
 | submit.source_file_name | source file to be submitted | |
 
-List of `general.language` candidates:
+Available options of `general.language`:
 
 - `c`
 - `cpp11`
@@ -82,8 +82,9 @@ List of `general.language` candidates:
 - `java`
 - `py`
 - `py3`
+- (Feel free to open an issue when you need other options)
 
 ## TODO
 
-[ ] Support available languages
-[ ] Remove username and password from configuration file (security)
+- [ ] Support available languages
+- [ ] Remove username and password from configuration file (security)

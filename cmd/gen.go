@@ -1,14 +1,16 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"github.com/spf13/cobra"
-	"github.com/travelist/aoj-cli/client"
+	"github.com/travelist/aoj-cli/client/response"
 	"github.com/travelist/aoj-cli/common"
 	"io"
 	"os"
 	"path/filepath"
 	"text/template"
+	"time"
 )
 
 func init() {
@@ -16,32 +18,48 @@ func init() {
 }
 
 var genCmd = &cobra.Command{
-	Use:   "gen",
+	Use:   "gen <PROBLEM_ID>",
 	Short: "Generate a boilerplate code and test cases",
-	Run: func(command *cobra.Command, args []string) {
+	Run:   genCommand,
+}
 
-		problemId := args[1]
-		fmt.Printf("Generate files for %s...\n", problemId)
-		client := client.NewAPIClient()
-		ts, e := client.FetchTestCases(args[1])
-		if e != nil {
-			fmt.Printf("Could not retrieve test cases: %s\n", problemId)
-			os.Exit(1)
+var genCommand = func(command *cobra.Command, args []string) {
+
+	problemId := args[1]
+	fmt.Printf("Generate files for %s...\n", problemId)
+	client, e := newDefaultClient()
+	if e != nil {
+		fmt.Printf("Could not create API Client: %v\n", client)
+		os.Exit(1)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	tss, e := client.FindByProblemIdSamples(ctx, args[1])
+	if e != nil {
+		fmt.Printf("Could not retrieve test cases: %s\n", problemId)
+		os.Exit(1)
+	}
+
+	// create directory
+	problemDir := filepath.Join(common.WorkspaceDirPath(), problemId)
+	e = os.Mkdir(problemDir, os.ModeDir)
+	if e != nil {
+		fmt.Printf("Could not create a directory:  %s\n", problemDir)
+		os.Exit(1)
+	}
+
+	// generate boilerplate code
+	generateMetadataFile(problemDir, problemId)
+
+	// if source code does not exist
+	generateSourceCodeFile(problemDir)
+
+	for _, ts := range tss {
+		if e := generateTestCaseFiles(problemDir, ts); e != nil {
+			fmt.Printf("%v\n", e)
 		}
-
-		// create directory
-		problemDir := filepath.Join(common.WorkspaceDirPath(), problemId)
-		e = os.Mkdir(problemDir, os.ModeDir)
-		if e != nil {
-			fmt.Printf("Could not create a directory:  %s\n", problemDir)
-			os.Exit(1)
-		}
-
-		// generate boilerplate code
-		generateMetadataFile(problemDir, problemId)
-		generateSourceCodeFile(problemDir)
-		generateTestCaseFiles(problemDir)
-	},
+	}
 }
 
 func generateMetadataFile(problemDir string, problemId string) error {
@@ -57,7 +75,9 @@ func generateMetadataFile(problemDir string, problemId string) error {
 	return tmpl.Execute(metadataFile, common.MetadataFileParam{ProblemId: problemId})
 }
 
-func generateTestCaseFiles(problemDir string) error {
+func generateTestCaseFiles(problemDir string, testCaseSample response.TestCaseSampleResponse) error {
+	fmt.Printf(testCaseSample.In)
+	fmt.Printf(testCaseSample.Out)
 	return nil
 }
 
