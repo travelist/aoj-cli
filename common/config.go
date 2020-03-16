@@ -8,7 +8,7 @@ import (
 	"runtime"
 )
 
-const ConfigDirName = ".common-cli"
+const ConfigDirName = ".aoj-cli"
 const ConfigFileName = "config.toml"
 const TemplateFileName = "template.txt"
 const MetadataFileName = "metadata.yml"

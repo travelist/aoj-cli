@@ -12,24 +12,23 @@ import (
 )
 
 func init() {
-	rootCmd.AddCommand(InitCmd)
+	rootCmd.AddCommand(initCmd)
 }
 
-var InitCmd = &cobra.Command{
+var initCmd = &cobra.Command{
 	Use:   "init",
-	Short: "initialize and configure common-cli",
-
-	// 1. Generate a configuration directory ("~/.aoj-cli")
-	// 2. Generate a configuration file ("~/.aoj-cli/config.toml")
-	// 3. Generate a template file ("~/.aoj-cli/template.txt")
-	Run: initCommand,
+	Short: "initialize and configure aoj-cli",
+	Run:   initCommand,
 }
 
+// 1. Generate a configuration directory ("~/.aoj-cli")
+// 2. Generate a configuration file ("~/.aoj-cli/config.toml")
+// 3. Generate a template file ("~/.aoj-cli/template.txt")
 var initCommand = func(command *cobra.Command, args []string) {
 	confDir := common.ConfigDirPath()
 
-	if e := os.Mkdir(confDir, os.ModeDir); e != nil {
-		fmt.Printf("Could not create a config directory: %s", e.Error())
+	if e := os.Mkdir(confDir, 0700); e != nil {
+		fmt.Printf("Could not create a config directory: %s\n", e.Error())
 		return
 	}
 
@@ -39,7 +38,7 @@ var initCommand = func(command *cobra.Command, args []string) {
 
 	file, e := os.OpenFile(confFile, os.O_RDWR|os.O_CREATE, 0755)
 	if e != nil {
-		fmt.Printf("Could not create/open a config file at %s : %s", confFile, e.Error())
+		fmt.Printf("Could not create/open a config file at %s : %s\n", confFile, e.Error())
 		return
 	}
 	defer file.Close()
@@ -68,7 +67,7 @@ var initCommand = func(command *cobra.Command, args []string) {
 	templateFilePath := common.TemplateFilePath()
 	templateFile, e := os.OpenFile(templateFilePath, os.O_RDWR|os.O_CREATE, 0755)
 	if e != nil {
-		fmt.Printf("Could not create/open a config file at %s : %s", templateFilePath, e.Error())
+		fmt.Printf("Could not create/open a config file at %s : %s\n", templateFilePath, e.Error())
 		return
 	}
 	defer templateFile.Close()

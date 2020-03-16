@@ -43,7 +43,7 @@ var genCommand = func(command *cobra.Command, args []string) {
 
 	// create directory
 	problemDir := filepath.Join(common.WorkspaceDirPath(), problemId)
-	e = os.Mkdir(problemDir, os.ModeDir)
+	e = os.Mkdir(problemDir, 0700)
 	if e != nil {
 		fmt.Printf("Could not create a directory:  %s\n", problemDir)
 		os.Exit(1)
@@ -86,7 +86,7 @@ func generateSourceCodeFile(problemDir string) error {
 	sourceFilePath := filepath.Join(problemDir, genFileName)
 	sourceFile, e := os.Create(sourceFilePath)
 	if e != nil {
-		fmt.Printf("Could not create/open a config file at %s : %s", sourceFilePath, e.Error())
+		fmt.Printf("Could not create/open a config file at %s : %s\n", sourceFilePath, e.Error())
 		return e
 	}
 	defer sourceFile.Close()

@@ -22,7 +22,7 @@ func NewClient(endpointURL string, httpClient *http.Client) (*AOJClient, error) 
 	parsedURL, e := url.ParseRequestURI(endpointURL)
 
 	if e != nil {
-		return nil, fmt.Errorf("failed to parse url: %s", endpointURL)
+		return nil, fmt.Errorf("failed to parse url: %s\n", endpointURL)
 	}
 
 	client := &AOJClient{

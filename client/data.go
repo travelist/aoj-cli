@@ -13,7 +13,7 @@ import (
 func (client *AOJClient) FindByProblemIdSamples(ctx context.Context, problemId string) (
 	response.TestCaseSampleListResponse, error) {
 
-	path := fmt.Sprintf("/testcases/samples/%s", problemId)
+	path := fmt.Sprintf("/testcases/samples/%s\n", problemId)
 	request, e := client.newRequest(ctx, http.MethodGet, path, nil)
 
 	if e != nil {

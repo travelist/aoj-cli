@@ -45,7 +45,7 @@ func initConfig() {
 	viper.AddConfigPath(common.ConfigDirPath())
 	viper.SetConfigType("toml")
 	if e := viper.ReadInConfig(); e != nil {
-		fmt.Printf("Warning. No configuration file. Please execute 'aoj init' to create it\n")
+		fmt.Printf("Warning: No configuration file. Please execute 'aoj init' to create it\n")
 		return
 	}
 	hasReadConfigFile = true
