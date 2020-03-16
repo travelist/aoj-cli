@@ -1,4 +1,4 @@
-package common
+package mapper
 
 // Mapping language identifier
 var aojLanguageId = map[string]string{

@@ -3,7 +3,8 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"github.com/travelist/aoj-cli/common"
+	"github.com/travelist/aoj-cli/cmd/conf"
+	tmpl2 "github.com/travelist/aoj-cli/cmd/tmpl"
 	"golang.org/x/crypto/ssh/terminal"
 	"os"
 	"path/filepath"
@@ -26,7 +27,7 @@ var initCmd = &cobra.Command{
 // 2. Generate a configuration file ("~/.aoj-cli/config.toml")
 // 3. Generate a template file ("~/.aoj-cli/template.txt")
 var initCommand = func(command *cobra.Command, args []string) {
-	confDir := common.ConfigDirPath()
+	confDir := conf.ConfigDirPath()
 
 	if _, e := os.Stat(confDir); os.IsNotExist(e) {
 		if e := os.Mkdir(confDir, 0700); e != nil {
@@ -35,7 +36,7 @@ var initCommand = func(command *cobra.Command, args []string) {
 		}
 	}
 
-	confFile := filepath.Join(confDir, "config.toml")
+	confFile := filepath.Join(confDir, conf.ConfigFileName)
 
 	// TODO check the existence of the configuration file and ask the user whether to overwrite it or not.
 
@@ -46,7 +47,7 @@ var initCommand = func(command *cobra.Command, args []string) {
 	}
 	defer file.Close()
 
-	tmpl := template.Must(template.New("AOJConfig").Parse(common.ConfigFileTemplate))
+	tmpl := template.Must(template.New("AOJConfig").Parse(tmpl2.ConfigFileTemplate))
 
 	lang, e := askLanguage()
 	if e != nil {
@@ -62,19 +63,19 @@ var initCommand = func(command *cobra.Command, args []string) {
 		return
 	}
 
-	param, _ := common.LanguageToDefaultConfigParam[lang]
+	param, _ := tmpl2.LanguageToDefaultConfigParam[lang]
 	param.Username = username
 	param.Password = password
 	tmpl.Execute(file, param)
 
-	templateFilePath := common.TemplateFilePath()
+	templateFilePath := conf.GetGenTemplateFile()
 	templateFile, e := os.OpenFile(templateFilePath, os.O_RDWR|os.O_CREATE, 0755)
 	if e != nil {
 		fmt.Printf("Could not create/open a config file at %s : %s\n", templateFilePath, e.Error())
 		return
 	}
 	defer templateFile.Close()
-	templateFile.Write([]byte(common.LanguageToDefaultTemplate[lang]))
+	templateFile.Write([]byte(tmpl2.LanguageToDefaultTemplate[lang]))
 
 	fmt.Printf("Configuration is successfully generated under ~/.aoj-cli\n")
 }
@@ -109,7 +110,7 @@ func askLanguage() (string, error) {
 
 	fmt.Printf("Coding language? [")
 	langs := []string{}
-	for _, v := range common.ValidLanguage {
+	for _, v := range tmpl2.ValidLanguage {
 		validLang[v] = true
 		langs = append(langs, v)
 	}
