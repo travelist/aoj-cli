@@ -22,6 +22,8 @@ func (client *AOJClient) Submit(ctx context.Context, body request.SubmitRequest)
 	}
 
 	var res response.SubmitResponse
-	e = client.send(req, &res)
+	if e := client.send(req, &res); e != nil {
+		return nil, e
+	}
 	return &res, e
 }

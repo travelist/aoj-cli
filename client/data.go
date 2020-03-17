@@ -14,27 +14,31 @@ func (client *AOJClient) FindByProblemIdSamples(ctx context.Context, problemId s
 	response.TestCaseSampleListResponse, error) {
 
 	path := fmt.Sprintf("/testcases/samples/%s\n", problemId)
-	request, e := client.newRequest(ctx, http.MethodGet, path, nil)
-
+	req, e := client.newRequest(ctx, http.MethodGet, path, nil)
 	if e != nil {
 		return nil, e
 	}
 
-	var res response.TestCaseSampleListResponse
-	e = client.send(request, &res)
-	return res, e
+	var result response.TestCaseSampleListResponse
+	if e := client.send(req, &result); e != nil {
+		return nil, e
+	}
+
+	return result, nil
 }
 
 func (client *AOJClient) FindByProblemIdTestcaseHeader(ctx context.Context, problemId string) (
 	*response.TestCaseHeaderResponse, error) {
 
 	path := fmt.Sprintf("/testcases/%s/header", problemId)
-	request, e := client.newRequest(ctx, http.MethodGet, path, nil)
+	req, e := client.newRequest(ctx, http.MethodGet, path, nil)
 	if e != nil {
 		return nil, e
 	}
 
 	var res response.TestCaseHeaderResponse
-	e = client.send(request, &res)
+	if e := client.send(req, &res); e != nil {
+		return nil, e
+	}
 	return &res, e
 }

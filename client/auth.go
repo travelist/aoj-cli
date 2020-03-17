@@ -23,7 +23,9 @@ func (client *AOJClient) Login(ctx context.Context, body request.LoginRequest) (
 	}
 
 	var res response.LoginResponse
-	e = client.send(req, &res)
+	if e := client.send(req, &res); e != nil {
+		return nil, e
+	}
 	return &res, e
 }
 
@@ -39,6 +41,9 @@ func (client *AOJClient) Session(ctx context.Context) (
 	}
 
 	var res response.SessionResponse
-	e = client.send(req, &res)
+	if e := client.send(req, &res); e != nil {
+		return nil, e
+	}
+
 	return &res, e
 }

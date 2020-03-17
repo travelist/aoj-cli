@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/pkg/errors"
 	"io"
 	"net/http"
 	"net/url"
@@ -59,9 +60,14 @@ func (client *AOJClient) send(request *http.Request, result interface{}) error {
 		return e
 	}
 
-	if e := decodeBody(res, &result); e != nil {
-		return e
+	if !IsSuccess(res.StatusCode) {
+		return newAOJClientError(res)
 	}
+
+	if e := decodeBody(res, result); e != nil {
+		return errors.Wrap(e, "cannot parse response body")
+	}
+
 	return nil
 }
 
@@ -78,4 +84,8 @@ func decodeBody(resp *http.Response, out interface{}) error {
 	defer resp.Body.Close()
 	decoder := json.NewDecoder(resp.Body)
 	return decoder.Decode(out)
+}
+
+func IsSuccess(code int) bool {
+	return 200 <= code && code < 300
 }
