@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/travelist/aoj-cli/cmd/conf"
 	tmpl2 "github.com/travelist/aoj-cli/cmd/tmpl"
@@ -36,13 +37,13 @@ var initCommand = func(command *cobra.Command, args []string) {
 		}
 	}
 
-	confFile := filepath.Join(confDir, conf.ConfigFileName)
+	confFilePath := filepath.Join(confDir, conf.ConfigFileName)
 
 	// TODO check the existence of the configuration file and ask the user whether to overwrite it or not.
 
-	file, e := os.OpenFile(confFile, os.O_RDWR|os.O_CREATE, 0755)
+	file, e := os.OpenFile(confFilePath, os.O_RDWR|os.O_CREATE, 0755)
 	if e != nil {
-		fmt.Printf("Could not create/open a config file at %s : %s\n", confFile, e.Error())
+		fmt.Printf("Could not create/open a config file at %s : %s\n", confFilePath, e.Error())
 		return
 	}
 	defer file.Close()
@@ -77,7 +78,7 @@ var initCommand = func(command *cobra.Command, args []string) {
 	defer templateFile.Close()
 	templateFile.Write([]byte(tmpl2.LanguageToDefaultTemplate[lang]))
 
-	fmt.Printf("Configuration is successfully generated under ~/.aoj-cli\n")
+	fmt.Printf("AOJ CLI is successfully initialised. Check %s\n", color.GreenString(confDir))
 }
 
 func ask(valid map[string]bool) (string, error) {

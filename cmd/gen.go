@@ -32,7 +32,8 @@ var genCommand = func(command *cobra.Command, args []string) {
 	}
 
 	problemId := args[0]
-	fmt.Printf("Creating directory for problem %s...\n", problemId)
+
+	fmt.Printf("Retrieving problem (%s) information...\n", problemId)
 	client, e := newDefaultClient()
 
 	if e != nil {
@@ -49,6 +50,7 @@ var genCommand = func(command *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
+	fmt.Printf("Creating directory for problem %s...\n", problemId)
 	currentDir, e := os.Getwd()
 	if e != nil {
 		fmt.Printf("Could not get current directory:  %v\n", e)

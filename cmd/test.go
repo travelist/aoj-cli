@@ -3,6 +3,7 @@ package cmd
 import (
 	"bytes"
 	"fmt"
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/travelist/aoj-cli/cmd/conf"
 	"io"
@@ -67,9 +68,9 @@ var testCommand = func(command *cobra.Command, args []string) {
 		}
 
 		if success {
-			fmt.Printf("PASS: test case #{%d}\n", index)
+			fmt.Printf("%s: test case #{%d}\n", color.GreenString("PASS"), index)
 		} else {
-			fmt.Printf("FAIL: test case #{%d}\n", index)
+			fmt.Printf("%v: test case #{%d}\n", color.RedString("FAIL"), index)
 			fmt.Printf("[Input]\n")
 			_ = showFileBody(testIns[index])
 			fmt.Printf("[Expected]\n")
