@@ -27,7 +27,7 @@ Generate a boilerplate code and test cases
 
 ```shell
 aoj gen <PROBLEM-ID>
-# Create related files under "./${PROBLEM-ID}" 
+# Create a problem directory under current dir
 ```
 
 Run tests
@@ -74,7 +74,7 @@ source_file_name = "main.cpp"
 | general.username | Username | |
 | general.password | password | |
 | gen.template_file | path to a template file | |
-| gen.destination_file_name | | |
+| gen.destination_file_name | file name of a generated code | |
 | test.before_all | command to be executed once before all tests | |
 | test.before_each | command to be executed before each test | |
 | test.test_commands | command to execute a solution | |
@@ -91,6 +91,17 @@ Available options of `general.language`:
 - `java`
 - `py`
 - `py3`
+- `d`
+- `csharp`
+- `go`
+- `js`
+- `php`
+- `scala`
+- `haskell`
+- `ocaml`
+- `kotlin`
+- `ruby`
+- `rust`
 - (Feel free to open an issue when you need other options)
 
 ## TODO
