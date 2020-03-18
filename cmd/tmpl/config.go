@@ -27,6 +27,17 @@ var ValidLanguage = []string{
 	"java",
 	"py",
 	"py3",
+	"d",
+	"csharp",
+	"go",
+	"js",
+	"php",
+	"scala",
+	"haskell",
+	"ocaml",
+	"kotlin",
+	"ruby",
+	"rust",
 }
 
 type ConfigFileParam struct {
@@ -104,12 +115,123 @@ var DefaultConfigFileParamPy3 = ConfigFileParam{
 	SubmitSourceFileName: "main.py",
 }
 
+var DefaultConfigFileParamD = ConfigFileParam{
+	Language:             "d",
+	Username:             "",
+	Password:             "",
+	GenSourceFileName:    "",
+	TestBeforeAll:        "",
+	TestCommand:          "",
+	SubmitSourceFileName: "",
+}
+var DefaultConfigFileParamCSharp = ConfigFileParam{
+	Language:             "csharp",
+	Username:             "",
+	Password:             "",
+	GenSourceFileName:    "",
+	TestBeforeAll:        "",
+	TestCommand:          "",
+	SubmitSourceFileName: "",
+}
+var DefaultConfigFileParamGo = ConfigFileParam{
+	Language:             "go",
+	Username:             "",
+	Password:             "",
+	GenSourceFileName:    "",
+	TestBeforeAll:        "",
+	TestCommand:          "",
+	SubmitSourceFileName: "",
+}
+var DefaultConfigFileParamJavaScript = ConfigFileParam{
+	Language:             "js",
+	Username:             "",
+	Password:             "",
+	GenSourceFileName:    "",
+	TestBeforeAll:        "",
+	TestCommand:          "",
+	SubmitSourceFileName: "",
+}
+var DefaultConfigFileParamPhp = ConfigFileParam{
+	Language:             "php",
+	Username:             "",
+	Password:             "",
+	GenSourceFileName:    "",
+	TestBeforeAll:        "",
+	TestCommand:          "",
+	SubmitSourceFileName: "",
+}
+var DefaultConfigFileParamScala = ConfigFileParam{
+	Language:             "scala",
+	Username:             "",
+	Password:             "",
+	GenSourceFileName:    "",
+	TestBeforeAll:        "",
+	TestCommand:          "",
+	SubmitSourceFileName: "",
+}
+var DefaultConfigFileParamHaskell = ConfigFileParam{
+	Language:             "haskell",
+	Username:             "",
+	Password:             "",
+	GenSourceFileName:    "",
+	TestBeforeAll:        "",
+	TestCommand:          "",
+	SubmitSourceFileName: "",
+}
+var DefaultConfigFileParamOCaml = ConfigFileParam{
+	Language:             "ocaml",
+	Username:             "",
+	Password:             "",
+	GenSourceFileName:    "",
+	TestBeforeAll:        "",
+	TestCommand:          "",
+	SubmitSourceFileName: "",
+}
+var DefaultConfigFileParamKotlin = ConfigFileParam{
+	Language:             "kotlin",
+	Username:             "",
+	Password:             "",
+	GenSourceFileName:    "",
+	TestBeforeAll:        "",
+	TestCommand:          "",
+	SubmitSourceFileName: "",
+}
+var DefaultConfigFileParamRuby = ConfigFileParam{
+	Language:             "ruby",
+	Username:             "",
+	Password:             "",
+	GenSourceFileName:    "",
+	TestBeforeAll:        "",
+	TestCommand:          "",
+	SubmitSourceFileName: "",
+}
+var DefaultConfigFileParamRust = ConfigFileParam{
+	Language:             "rust",
+	Username:             "",
+	Password:             "",
+	GenSourceFileName:    "",
+	TestBeforeAll:        "",
+	TestCommand:          "",
+	SubmitSourceFileName: "",
+}
+
 var LanguageToDefaultConfigParam = map[string]ConfigFileParam{
-	"c":     DefaultConfigFileParamC,
-	"cpp":   DefaultConfigFileParamCpp,
-	"cpp11": DefaultConfigFileParamCpp11,
-	"cpp14": DefaultConfigFileParamCpp14,
-	"java":  DefaultConfigFileParamJava,
-	"py":    DefaultConfigFileParamPy,
-	"py3":   DefaultConfigFileParamPy3,
+	"c":       DefaultConfigFileParamC,
+	"cpp":     DefaultConfigFileParamCpp,
+	"cpp11":   DefaultConfigFileParamCpp11,
+	"cpp14":   DefaultConfigFileParamCpp14,
+	"java":    DefaultConfigFileParamJava,
+	"py":      DefaultConfigFileParamPy,
+	"py3":     DefaultConfigFileParamPy3,
+	"d":       DefaultConfigFileParamD,
+	"csharp":  DefaultConfigFileParamCSharp,
+	"go":      DefaultConfigFileParamGo,
+	"js":      DefaultConfigFileParamJavaScript,
+	"php":     DefaultConfigFileParamPhp,
+	"scala":   DefaultConfigFileParamScala,
+	"haskell": DefaultConfigFileParamHaskell,
+	"ocaml":   DefaultConfigFileParamOCaml,
+	"kotlin":  DefaultConfigFileParamKotlin,
+	"ruby":    DefaultConfigFileParamRuby,
+	"rust":    DefaultConfigFileParamRust,
 }

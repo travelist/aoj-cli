@@ -1,27 +1,27 @@
 package mapper
 
 // Mapping language identifier
-var aojLanguageId = map[string]string{
-	"c":     "C",
-	"cpp11": "C++11",
-	"cpp14": "C++14",
-	"cpp":   "C++",
-	"java":  "java",
-	"py":    "Python",
-	"py3":   "Python3",
-	// TODO
-	//"d":       "D",
-	//"go":      "Go",
-	//"js":      "JavaScript",
-	//"php":     "Php",
-	//"scala":   "Scala",
-	//"haskell": "Haskell",
-	//"ocaml":   "Ocaml",
-	//"kotlin":  "Kotlin",
-	//"ruby":    "Ruby",
-	//"rust":    "Rust",
+var aojConfigToSystemLanguageName = map[string]string{
+	"c":       "C",
+	"cpp11":   "C++11",
+	"cpp14":   "C++14",
+	"cpp":     "C++",
+	"java":    "JAVA",
+	"py":      "Python",
+	"py3":     "Python3",
+	"d":       "D",
+	"csharp":  "C#",
+	"go":      "Go",
+	"js":      "JavaScript",
+	"php":     "PHP",
+	"scala":   "Scala",
+	"haskell": "Haskell",
+	"ocaml":   "OCaml",
+	"kotlin":  "Kotlin",
+	"ruby":    "Ruby",
+	"rust":    "Rust",
 }
 
 func ConvertToAOJLanguage(lang string) string {
-	return aojLanguageId[lang]
+	return aojConfigToSystemLanguageName[lang]
 }
