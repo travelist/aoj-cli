@@ -1,4 +1,4 @@
-version: 2.0
+version: 2.1
 
 jobs:
   test:
@@ -34,7 +34,6 @@ jobs:
       - run: curl -sL https://git.io/goreleaser | bash
 
 workflows:
-  version: 2.1
   main:
     jobs:
       - test
