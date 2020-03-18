@@ -4,28 +4,24 @@ jobs:
   test:
     docker:
       - image: circleci/golang:1.14
-    working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
+    working_directory: /go/src/github.com/travelist/aoj-cli
     steps:
       - checkout
       - restore_cache:
           key: gopkg-{{ .Branch }}-{{ checksum "Gopkg.lock" }}
           paths:
-            - /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}/vendor
+            - vendor
       - run:
           name: download-libraries
-          command: |
-            if [ ! -d /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}/vendor ]; then
-                curl -L -s https://github.com/golang/dep/releases/download/v${DEP_VERSION}/dep-linux-amd64 -o /go/bin/dep
-                chmod +x /go/bin/dep
-                /go/bin/dep ensure
-            fi
+          command: curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+      - run:
+          name: download dependencies
+          command: dep ensure
       - save_cache:
           key: gopkg-{{ .Branch }}-{{ checksum "Gopkg.lock" }}
           paths:
-            - /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}/vendor
-      - run: dep ensure
+            - vendor
       - run: go test
-
   release:
     docker:
       - image: circleci/golang:1.14
