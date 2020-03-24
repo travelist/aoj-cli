@@ -2,7 +2,6 @@ package client
 
 import (
 	"fmt"
-	"github.com/travelist/aoj-cli/client/response"
 	"net/http"
 )
 
@@ -10,28 +9,27 @@ type AOJErrorCode string
 
 // AOJ API Error
 type AOJClientError struct {
-	// HTTP Status code
-	statusCode int
 
 	// Actual API response
-	response response.ErrorResponse
+	response *http.Response
 }
 
 func (e *AOJClientError) Error() string {
-	return fmt.Sprintf("aoj api client error: status_code=%d", e.statusCode)
+	if e.response == nil {
+		return fmt.Sprintf("AOJ API Client Error: no response")
+	}
+
+	url := e.response.Request.URL
+	method := e.response.Request.Method
+	statusCode := e.response.StatusCode
+
+	return fmt.Sprintf("AOJ API Client Error: url=%s method=%s status_code=%d", url, method, statusCode)
 }
 
 //func (m *AOJClientError) String() string { return m.value }
 
 func newAOJClientError(res *http.Response) *AOJClientError {
-	var result = AOJClientError{statusCode: res.StatusCode}
-	var body = response.ErrorResponse{}
-	if e := decodeBody(res, &body); e != nil {
-		return &result
-	}
-
-	result.response = body
-	return &result
+	return &AOJClientError{response: res}
 }
 
 //func IsBadRequestError(e AOJClientError) bool {

@@ -1,4 +1,4 @@
-package tmpl
+package boilerplate
 
 var ConfigFileTemplate = `[general]
 language = "{{.Language}}"

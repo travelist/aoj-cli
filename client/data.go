@@ -13,8 +13,8 @@ import (
 func (client *AOJClient) FindByProblemIdSamples(ctx context.Context, problemId string) (
 	response.TestCaseSampleListResponse, error) {
 
-	path := fmt.Sprintf("/testcases/samples/%s\n", problemId)
-	req, e := client.newRequest(ctx, http.MethodGet, path, nil)
+	path := fmt.Sprintf("/testcases/samples/%s", problemId)
+	req, e := client.newDataRequest(ctx, http.MethodGet, path, nil)
 	if e != nil {
 		return nil, e
 	}
@@ -31,7 +31,7 @@ func (client *AOJClient) FindByProblemIdTestcaseHeader(ctx context.Context, prob
 	*response.TestCaseHeaderResponse, error) {
 
 	path := fmt.Sprintf("/testcases/%s/header", problemId)
-	req, e := client.newRequest(ctx, http.MethodGet, path, nil)
+	req, e := client.newDataRequest(ctx, http.MethodGet, path, nil)
 	if e != nil {
 		return nil, e
 	}

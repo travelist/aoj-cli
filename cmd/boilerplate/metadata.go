@@ -1,4 +1,4 @@
-package tmpl
+package boilerplate
 
 var MetadataFileTemplate = `problem_id: {{.ProblemId}}`
 

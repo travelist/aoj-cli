@@ -5,7 +5,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/travelist/aoj-cli/cmd/conf"
-	tmpl2 "github.com/travelist/aoj-cli/cmd/tmpl"
+	tmpl2 "github.com/travelist/aoj-cli/cmd/boilerplate"
 	"golang.org/x/crypto/ssh/terminal"
 	"os"
 	"path/filepath"
@@ -48,7 +48,7 @@ var initCommand = func(command *cobra.Command, args []string) {
 	}
 	defer file.Close()
 
-	tmpl := template.Must(template.New("AOJConfig").Parse(tmpl2.ConfigFileTemplate))
+	tp := template.Must(template.New("AOJConfig").Parse(tmpl2.ConfigFileTemplate))
 
 	lang, e := askLanguage()
 	if e != nil {
@@ -67,7 +67,7 @@ var initCommand = func(command *cobra.Command, args []string) {
 	param, _ := tmpl2.LanguageToDefaultConfigParam[lang]
 	param.Username = username
 	param.Password = password
-	tmpl.Execute(file, param)
+	tp.Execute(file, param)
 
 	templateFilePath := conf.GetGenTemplateFile()
 	templateFile, e := os.OpenFile(templateFilePath, os.O_RDWR|os.O_CREATE, 0755)

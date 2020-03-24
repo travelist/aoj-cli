@@ -3,10 +3,11 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/travelist/aoj-cli/client/response"
+	tmpl2 "github.com/travelist/aoj-cli/cmd/boilerplate"
 	"github.com/travelist/aoj-cli/cmd/conf"
-	tmpl2 "github.com/travelist/aoj-cli/cmd/tmpl"
 	"io"
 	"os"
 	"path/filepath"
@@ -32,8 +33,6 @@ var genCommand = func(command *cobra.Command, args []string) {
 	}
 
 	problemId := args[0]
-
-	fmt.Printf("Retrieving problem (%s) information...\n", problemId)
 	client, e := newDefaultClient()
 
 	if e != nil {
@@ -50,7 +49,6 @@ var genCommand = func(command *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	fmt.Printf("Creating directory for problem %s...\n", problemId)
 	currentDir, e := os.Getwd()
 	if e != nil {
 		fmt.Printf("Could not get current directory:  %v\n", e)
@@ -66,6 +64,12 @@ var genCommand = func(command *cobra.Command, args []string) {
 		}
 	}
 
+	for _, ts := range tss {
+		if e := generateTestCaseFiles(problemDir, ts); e != nil {
+			fmt.Printf("%v\n", e)
+		}
+	}
+
 	// generate metadata file
 	if e := generateMetadataFile(problemDir, problemId); e != nil {
 		fmt.Printf("%v\n", e)
@@ -74,18 +78,23 @@ var genCommand = func(command *cobra.Command, args []string) {
 
 	genFileName := conf.GetGenDestinationFileName()
 	sourceFilePath := filepath.Join(problemDir, genFileName)
-	if _, e := os.Stat(sourceFilePath); os.IsNotExist(e) {
+	fmt.Println(genFileName)
+	fmt.Println(sourceFilePath)
+
+	_, e = os.Stat(sourceFilePath)
+	fmt.Println(e)
+	if os.IsNotExist(e) {
 		if e := generateSourceCodeFile(sourceFilePath); e != nil {
 			fmt.Printf("%v\n", e)
 			os.Exit(1)
 		}
 	}
 
-	for _, ts := range tss {
-		if e := generateTestCaseFiles(problemDir, ts); e != nil {
-			fmt.Printf("%v\n", e)
-		}
-	}
+	fmt.Printf("%s %s %s\n",
+		color.GreenString("Successfully created"),
+		color.GreenString(problemId),
+		color.GreenString("directory"),
+	)
 }
 
 func generateMetadataFile(problemDir string, problemId string) error {
@@ -96,9 +105,8 @@ func generateMetadataFile(problemDir string, problemId string) error {
 		return e
 	}
 	defer metadataFile.Close()
-
-	tmpl := template.Must(template.ParseGlob(tmpl2.MetadataFileTemplate))
-	return tmpl.Execute(metadataFile, tmpl2.MetadataFileParam{ProblemId: problemId})
+	tp := template.Must(template.New("metadata").Parse(tmpl2.MetadataFileTemplate))
+	return tp.Execute(metadataFile, tmpl2.MetadataFileParam{ProblemId: problemId})
 }
 
 func generateTestCaseFiles(problemDir string, testCaseSample response.TestCaseSampleResponse) error {
@@ -106,14 +114,14 @@ func generateTestCaseFiles(problemDir string, testCaseSample response.TestCaseSa
 	b := fmt.Sprintf("out_%d.txt", testCaseSample.Serial)
 	inFile := filepath.Join(problemDir, a)
 	outFile := filepath.Join(problemDir, b)
-	inf, e := os.Open(inFile)
+	inf, e := os.OpenFile(inFile, os.O_RDWR|os.O_CREATE, 0600)
 	if e != nil {
 		return e
 	}
 	defer inf.Close()
 	io.Copy(inf, strings.NewReader(testCaseSample.In))
 
-	outf, e := os.Open(outFile)
+	outf, e := os.OpenFile(outFile, os.O_RDWR|os.O_CREATE, 0600)
 	if e != nil {
 		return e
 	}
@@ -124,7 +132,7 @@ func generateTestCaseFiles(problemDir string, testCaseSample response.TestCaseSa
 }
 
 func generateSourceCodeFile(sourceFilePath string) error {
-	sourceFile, e := os.Create(sourceFilePath)
+	sourceFile, e := os.OpenFile(sourceFilePath, os.O_RDWR|os.O_CREATE, 0600)
 	if e != nil {
 		fmt.Printf("Could not create/open a config file at %s : %s\n", sourceFilePath, e.Error())
 		return e
@@ -139,7 +147,7 @@ func generateSourceCodeFile(sourceFilePath string) error {
 		return nil
 	}
 
-	templateFile, e := os.Open(TemplateFilePath)
+	templateFile, e := os.OpenFile(TemplateFilePath, os.O_RDWR|os.O_CREATE, 0600)
 	if e == nil {
 		fmt.Printf("Could not open a template file: %s\n", TemplateFilePath)
 		lang := conf.GetGeneralLanguage()

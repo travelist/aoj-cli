@@ -1,4 +1,4 @@
-package tmpl
+package boilerplate
 
 var DefaultTemplateForC = `#include <stdio.h>
 

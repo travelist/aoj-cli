@@ -17,7 +17,7 @@ func (client *AOJClient) Login(ctx context.Context, body request.LoginRequest) (
 		return nil, e
 	}
 
-	req, e := client.newRequest(ctx, http.MethodPost, path, jsonBody)
+	req, e := client.newAPIRequest(ctx, http.MethodPost, path, jsonBody)
 	if e != nil {
 		return nil, e
 	}
@@ -35,7 +35,7 @@ func (client *AOJClient) Session(ctx context.Context) (
 	*response.SessionResponse, error) {
 	path := "/session"
 
-	req, e := client.newRequest(ctx, http.MethodGet, path, nil)
+	req, e := client.newAPIRequest(ctx, http.MethodGet, path, nil)
 	if e != nil {
 		return nil, e
 	}

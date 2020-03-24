@@ -48,43 +48,48 @@ var testCommand = func(command *cobra.Command, args []string) {
 	}
 
 	if len(testIns) == 0 {
-
+		fmt.Printf("%s - No test cases found\n", color.GreenString("AC"))
+		os.Exit(0)
 	}
 
-	fmt.Printf("Found %d test cases\n", len(testIns))
-	for index, _ := range testIns {
-		fmt.Printf("Running test set #%d\n", index)
+	allSuccess := true
 
+	for index, _ := range testIns {
 		if e := executeBeforeEach(); e != nil {
 			fmt.Printf("%v\n", e)
 			os.Exit(1)
 		}
 
 		// TODO TLE check
-		output, e := executeCommand(strings.Split(c, " "), testIns[index])
+		out, e := executeCommand(strings.Split(c, " "), testIns[index])
 		if e != nil {
 			fmt.Printf("%v\n", e)
 			os.Exit(1)
 		}
 
-		success, e := checkOutput(testOuts[index], output)
+		success, e := checkOutput(testOuts[index], out)
 		if e != nil {
 			fmt.Printf("%v\n", e)
 			os.Exit(1)
 		}
 
 		if success {
-			fmt.Printf("%s: test set #%d\n", color.GreenString("PASS"), index)
+			fmt.Printf("# in_%d.txt ... %s\n", index+1, color.GreenString("AC"))
 		} else {
-			fmt.Printf("%v: test set #%d\n", color.RedString("FAIL"), index)
-			fmt.Printf("[Input]\n")
+			allSuccess = false
+			fmt.Printf("# in_%d.txt ... %s\n", index+1, color.RedString("WA"))
+
+			fmt.Printf("%s\n", color.MagentaString("[Input]"))
 			in, _ := getFileBody(testIns[index])
-			fmt.Printf("%s", in)
-			fmt.Printf("[Expected]\n")
-			out, _ := getFileBody(testOuts[index])
-			fmt.Printf("%s", color.RedString(out))
-			fmt.Printf("[Actual]\n")
-			fmt.Printf(color.RedString(string(output)))
+			fmt.Printf(in)
+
+			fmt.Printf("%s\n", color.MagentaString("[Expected]"))
+			expected, _ := getFileBody(testOuts[index])
+			fmt.Printf(expected)
+
+			fmt.Printf("%s\n", color.MagentaString("[Actual]"))
+			fmt.Printf(string(out))
+			fmt.Println()
 		}
 
 		if e := executeAfterEach(); e != nil {
@@ -98,17 +103,21 @@ var testCommand = func(command *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
+	if allSuccess {
+		fmt.Printf("%s\n", color.GreenString("All AC!"))
+	} else {
+		fmt.Printf("%s\n", color.RedString("Some cases are WRONG ANSWER"))
+	}
+
 }
 
 func executeBeforeAll() error {
 	c := conf.GetTestBeforeAll()
 	if len(c) == 0 {
-		fmt.Printf("[%s] %s\n", color.GreenString("Before All"), color.BlueString("pass"))
 		return nil
 	}
 
 	a := strings.Split(c, " ")
-	fmt.Printf("[%s] %s\n", color.GreenString("Before All"), color.BlueString(c))
 
 	var out, err bytes.Buffer
 	command := exec.Command(a[0], a[1:]...)
@@ -144,7 +153,6 @@ func executeBeforeEach() error {
 }
 
 func executeCommand(command []string, inputFilePath string) ([]byte, error) {
-	fmt.Printf("[%s] %s\n", color.GreenString("Test"), color.BlueString(strings.Join(command, " ")))
 	in, e := os.Open(inputFilePath)
 	if e != nil {
 		return []byte{}, fmt.Errorf("cannot open %s, %v", inputFilePath, e)
@@ -192,8 +200,6 @@ func executeAfterEach() error {
 	if len(c) == 0 {
 		return nil
 	}
-
-	fmt.Printf("[%s] %s\n", color.GreenString("After Each"), color.BlueString(c))
 
 	a := strings.Split(c, " ")
 	e := exec.Command(a[0], a[1:]...).Run()

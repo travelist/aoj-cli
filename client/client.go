@@ -13,22 +13,30 @@ import (
 )
 
 type AOJClient struct {
-	EndpointURL *url.URL
-	HTTPClient  *http.Client
-	username    string
-	password    string
+	// Base API endpoint URL
+	APIEndpointURL *url.URL
+
+	// Data API endpoint URL
+	DataAPIEndpointURL *url.URL
+	HTTPClient         *http.Client
+	username           string
+	password           string
 }
 
-func NewClient(endpointURL string, httpClient *http.Client) (*AOJClient, error) {
-	parsedURL, e := url.ParseRequestURI(endpointURL)
-
+func NewClient(baseEndpointURL string, dataEndpointUrl string, httpClient *http.Client) (*AOJClient, error) {
+	parsedBaseURL, e := url.ParseRequestURI(baseEndpointURL)
 	if e != nil {
-		return nil, fmt.Errorf("failed to parse url: %s\n", endpointURL)
+		return nil, fmt.Errorf("failed to parse url: %s\n", baseEndpointURL)
+	}
+	parsedDataURL, e := url.ParseRequestURI(dataEndpointUrl)
+	if e != nil {
+		return nil, fmt.Errorf("failed to parse url: %s\n", dataEndpointUrl)
 	}
 
 	client := &AOJClient{
-		EndpointURL: parsedURL,
-		HTTPClient:  httpClient,
+		APIEndpointURL:     parsedBaseURL,
+		DataAPIEndpointURL: parsedDataURL,
+		HTTPClient:         httpClient,
 	}
 
 	return client, nil
@@ -36,14 +44,32 @@ func NewClient(endpointURL string, httpClient *http.Client) (*AOJClient, error) 
 
 // --- private utilities ---
 
-func (client *AOJClient) newRequest(
+func (client *AOJClient) newAPIRequest(
 	ctx context.Context,
 	method string,
 	urlPath string,
 	body io.Reader) (*http.Request, error) {
 
-	endpointURL := *client.EndpointURL
-	endpointURL.Path = path.Join(client.EndpointURL.Path, urlPath)
+	endpointURL := *client.APIEndpointURL
+	endpointURL.Path = path.Join(client.APIEndpointURL.Path, urlPath)
+
+	req, e := http.NewRequest(method, endpointURL.String(), body)
+	if e != nil {
+		return nil, e
+	}
+
+	req = req.WithContext(ctx)
+	return req, nil
+}
+
+func (client *AOJClient) newDataRequest(
+	ctx context.Context,
+	method string,
+	urlPath string,
+	body io.Reader) (*http.Request, error) {
+
+	endpointURL := *client.DataAPIEndpointURL
+	endpointURL.Path = path.Join(client.DataAPIEndpointURL.Path, urlPath)
 
 	req, e := http.NewRequest(method, endpointURL.String(), body)
 	if e != nil {

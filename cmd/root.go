@@ -11,10 +11,12 @@ import (
 
 // default values
 const defaultApiUrl = "https://judgeapi.u-aizu.ac.jp"
+const defaultDataApiUrl = "https://judgedat.u-aizu.ac.jp"
 const metadataFileName = "metadata.yml"
 
 // config keys
-const configKeyAPIUrl = "baseUrl"
+const configKeyBaseAPIUrl = "baseUrl"
+const configKeyDataAPIUrl = "dataUrl"
 
 var (
 	// true if the configuration file has been read
@@ -30,8 +32,10 @@ var (
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	rootCmd.PersistentFlags().StringP("baseUrl", "", defaultApiUrl, "API endpoint")
-	viper.BindPFlag(configKeyAPIUrl, rootCmd.PersistentFlags().Lookup(configKeyAPIUrl))
+	rootCmd.PersistentFlags().StringP(configKeyBaseAPIUrl, "", defaultApiUrl, "API endpoint")
+	rootCmd.PersistentFlags().StringP(configKeyDataAPIUrl, "", defaultDataApiUrl, "API endpoint")
+	viper.BindPFlag(configKeyBaseAPIUrl, rootCmd.PersistentFlags().Lookup(configKeyBaseAPIUrl))
+	viper.BindPFlag(configKeyDataAPIUrl, rootCmd.PersistentFlags().Lookup(configKeyDataAPIUrl))
 }
 
 // Execute executes the root command.
@@ -40,9 +44,10 @@ func Run() error {
 }
 
 func newDefaultClient() (*client.AOJClient, error) {
-	endpointURL := viper.GetString(configKeyAPIUrl)
+	endpointURL := viper.GetString(configKeyBaseAPIUrl)
+	dataEndpointURL := viper.GetString(configKeyDataAPIUrl)
 	httpClient := &http.Client{}
-	return client.NewClient(endpointURL, httpClient)
+	return client.NewClient(endpointURL, dataEndpointURL, httpClient)
 }
 
 // read and initialize configuration
