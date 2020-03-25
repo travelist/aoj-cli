@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"github.com/travelist/aoj-cli/client/response"
 	"net/http"
 )
 
@@ -22,6 +23,9 @@ func (e *AOJClientError) Error() string {
 	url := e.response.Request.URL
 	method := e.response.Request.Method
 	statusCode := e.response.StatusCode
+	var body response.ErrorResponse
+	decodeBody(e.response, &body)
+	fmt.Println(body[0].Code)
 
 	return fmt.Sprintf("AOJ API Client Error: url=%s method=%s status_code=%d", url, method, statusCode)
 }

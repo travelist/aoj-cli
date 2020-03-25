@@ -1,11 +1,6 @@
 package boilerplate
 
-var ConfigFileTemplate = `[general]
-language = "{{.Language}}"
-username = "{{.Username}}"
-password = "{{.Password}}"
-
-[gen]
+const ConfigFileTemplate = `[gen]
 template_file = "$HOME/.aoj-cli/template.txt"
 destination_file_name = "{{.GenSourceFileName}}"
 
@@ -17,33 +12,75 @@ after_each=""
 after_all=""
 
 [submit]
-source_file_name = "{{.SubmitSourceFileName}}"`
+language = "{{.Language}}"
+source_file_name = "{{.SubmitSourceFileName}}"
+`
 
-var ValidLanguage = []string{
-	"c",
-	"cpp",
-	"cpp11",
-	"cpp14",
-	"java",
-	"py",
-	"py3",
-	"d",
-	"csharp",
-	"go",
-	"js",
-	"php",
-	"scala",
-	"haskell",
-	"ocaml",
-	"kotlin",
-	"ruby",
-	"rust",
+const (
+	LangC          = "C"
+	LangCPP11      = "C++11"
+	LangCPP14      = "C++14"
+	LangCPP        = "C++"
+	LangJava       = "JAVA"
+	LangPython     = "Python"
+	LangPython3    = "Python3"
+	LangD          = "D"
+	LangCSharp     = "C#"
+	LangGo         = "Go"
+	LangJavascript = "JavaScript"
+	LangPHP        = "PHP"
+	LangScala      = "Scala"
+	LangHaskel     = "Haskell"
+	LangOCaml      = "OCaml"
+	LangKotlin     = "Kotlin"
+	LangRuby       = "Ruby"
+	LangRust       = "Rust"
+)
+
+var ValidLanguageList = []string{
+	LangC,
+	LangCPP11,
+	LangCPP14,
+	LangCPP,
+	LangJava,
+	LangPython,
+	LangPython3,
+	LangD,
+	LangCSharp,
+	LangGo,
+	LangJavascript,
+	LangPHP,
+	LangScala,
+	LangHaskel,
+	LangOCaml,
+	LangKotlin,
+	LangRuby,
+	LangRust,
+}
+
+var ValidLanguageSet = map[string]bool{
+	LangC:          true,
+	LangCPP11:      true,
+	LangCPP14:      true,
+	LangCPP:        true,
+	LangJava:       true,
+	LangPython:     true,
+	LangPython3:    true,
+	LangD:          true,
+	LangCSharp:     true,
+	LangGo:         true,
+	LangJavascript: true,
+	LangPHP:        true,
+	LangScala:      true,
+	LangHaskel:     true,
+	LangOCaml:      true,
+	LangKotlin:     true,
+	LangRuby:       true,
+	LangRust:       true,
 }
 
 type ConfigFileParam struct {
 	Language             string
-	Username             string
-	Password             string
 	GenSourceFileName    string
 	TestBeforeAll        string
 	TestCommand          string
@@ -51,9 +88,7 @@ type ConfigFileParam struct {
 }
 
 var DefaultConfigFileParamC = ConfigFileParam{
-	Language:             "c",
-	Username:             "",
-	Password:             "",
+	Language:             LangC,
 	GenSourceFileName:    "main.c",
 	TestBeforeAll:        "gcc main.c",
 	TestCommand:          "./a.out",
@@ -61,54 +96,42 @@ var DefaultConfigFileParamC = ConfigFileParam{
 }
 
 var DefaultConfigFileParamCpp = ConfigFileParam{
-	Language:             "cpp",
-	Username:             "",
-	Password:             "",
+	Language:             LangCPP,
 	GenSourceFileName:    "main.cpp",
 	TestBeforeAll:        "g++ main.cpp -o a.out",
 	TestCommand:          "./a.out",
 	SubmitSourceFileName: "main.cpp",
 }
 var DefaultConfigFileParamCpp11 = ConfigFileParam{
-	Language:             "cpp11",
-	Username:             "",
-	Password:             "",
+	Language:             LangCPP11,
 	GenSourceFileName:    "main.cpp",
 	TestBeforeAll:        "g++ main.cpp -o a.out",
 	TestCommand:          "./a.out",
 	SubmitSourceFileName: "main.cpp",
 }
 var DefaultConfigFileParamCpp14 = ConfigFileParam{
-	Language:             "cpp14",
-	Username:             "",
-	Password:             "",
+	Language:             LangCPP14,
 	GenSourceFileName:    "main.cpp",
 	TestBeforeAll:        "g++ main.cpp -o a.out",
 	TestCommand:          "./a.out",
 	SubmitSourceFileName: "main.cpp",
 }
 var DefaultConfigFileParamJava = ConfigFileParam{
-	Language:             "java",
-	Username:             "",
-	Password:             "",
+	Language:             LangJava,
 	GenSourceFileName:    "Main.java",
 	TestBeforeAll:        "javac Main.java",
 	TestCommand:          "java Main",
 	SubmitSourceFileName: "Main.java",
 }
 var DefaultConfigFileParamPy = ConfigFileParam{
-	Language:             "py",
-	Username:             "",
-	Password:             "",
+	Language:             LangPython,
 	GenSourceFileName:    "main.py",
 	TestBeforeAll:        "",
 	TestCommand:          "python main.py",
 	SubmitSourceFileName: "main.py",
 }
 var DefaultConfigFileParamPy3 = ConfigFileParam{
-	Language:             "py3",
-	Username:             "",
-	Password:             "",
+	Language:             LangPython3,
 	GenSourceFileName:    "main.py",
 	TestBeforeAll:        "",
 	TestCommand:          "python main.py",
@@ -116,99 +139,77 @@ var DefaultConfigFileParamPy3 = ConfigFileParam{
 }
 
 var DefaultConfigFileParamD = ConfigFileParam{
-	Language:             "d",
-	Username:             "",
-	Password:             "",
+	Language:             LangD,
 	GenSourceFileName:    "",
 	TestBeforeAll:        "",
 	TestCommand:          "",
 	SubmitSourceFileName: "",
 }
 var DefaultConfigFileParamCSharp = ConfigFileParam{
-	Language:             "csharp",
-	Username:             "",
-	Password:             "",
+	Language:             LangCSharp,
 	GenSourceFileName:    "",
 	TestBeforeAll:        "",
 	TestCommand:          "",
 	SubmitSourceFileName: "",
 }
 var DefaultConfigFileParamGo = ConfigFileParam{
-	Language:             "go",
-	Username:             "",
-	Password:             "",
+	Language:             LangGo,
 	GenSourceFileName:    "",
 	TestBeforeAll:        "",
 	TestCommand:          "",
 	SubmitSourceFileName: "",
 }
 var DefaultConfigFileParamJavaScript = ConfigFileParam{
-	Language:             "js",
-	Username:             "",
-	Password:             "",
+	Language:             LangJavascript,
 	GenSourceFileName:    "",
 	TestBeforeAll:        "",
 	TestCommand:          "",
 	SubmitSourceFileName: "",
 }
 var DefaultConfigFileParamPhp = ConfigFileParam{
-	Language:             "php",
-	Username:             "",
-	Password:             "",
+	Language:             LangPHP,
 	GenSourceFileName:    "",
 	TestBeforeAll:        "",
 	TestCommand:          "",
 	SubmitSourceFileName: "",
 }
 var DefaultConfigFileParamScala = ConfigFileParam{
-	Language:             "scala",
-	Username:             "",
-	Password:             "",
+	Language:             LangScala,
 	GenSourceFileName:    "",
 	TestBeforeAll:        "",
 	TestCommand:          "",
 	SubmitSourceFileName: "",
 }
 var DefaultConfigFileParamHaskell = ConfigFileParam{
-	Language:             "haskell",
-	Username:             "",
-	Password:             "",
+	Language:             LangHaskel,
 	GenSourceFileName:    "",
 	TestBeforeAll:        "",
 	TestCommand:          "",
 	SubmitSourceFileName: "",
 }
 var DefaultConfigFileParamOCaml = ConfigFileParam{
-	Language:             "ocaml",
-	Username:             "",
-	Password:             "",
+	Language:             LangOCaml,
 	GenSourceFileName:    "",
 	TestBeforeAll:        "",
 	TestCommand:          "",
 	SubmitSourceFileName: "",
 }
 var DefaultConfigFileParamKotlin = ConfigFileParam{
-	Language:             "kotlin",
-	Username:             "",
-	Password:             "",
+	Language:             LangKotlin,
 	GenSourceFileName:    "",
 	TestBeforeAll:        "",
 	TestCommand:          "",
 	SubmitSourceFileName: "",
 }
 var DefaultConfigFileParamRuby = ConfigFileParam{
-	Language:             "ruby",
-	Username:             "",
-	Password:             "",
+	Language:             LangRuby,
 	GenSourceFileName:    "",
 	TestBeforeAll:        "",
 	TestCommand:          "",
 	SubmitSourceFileName: "",
 }
 var DefaultConfigFileParamRust = ConfigFileParam{
-	Language:             "rust",
-	Username:             "",
-	Password:             "",
+	Language:             LangRust,
 	GenSourceFileName:    "",
 	TestBeforeAll:        "",
 	TestCommand:          "",
@@ -216,22 +217,22 @@ var DefaultConfigFileParamRust = ConfigFileParam{
 }
 
 var LanguageToDefaultConfigParam = map[string]ConfigFileParam{
-	"c":       DefaultConfigFileParamC,
-	"cpp":     DefaultConfigFileParamCpp,
-	"cpp11":   DefaultConfigFileParamCpp11,
-	"cpp14":   DefaultConfigFileParamCpp14,
-	"java":    DefaultConfigFileParamJava,
-	"py":      DefaultConfigFileParamPy,
-	"py3":     DefaultConfigFileParamPy3,
-	"d":       DefaultConfigFileParamD,
-	"csharp":  DefaultConfigFileParamCSharp,
-	"go":      DefaultConfigFileParamGo,
-	"js":      DefaultConfigFileParamJavaScript,
-	"php":     DefaultConfigFileParamPhp,
-	"scala":   DefaultConfigFileParamScala,
-	"haskell": DefaultConfigFileParamHaskell,
-	"ocaml":   DefaultConfigFileParamOCaml,
-	"kotlin":  DefaultConfigFileParamKotlin,
-	"ruby":    DefaultConfigFileParamRuby,
-	"rust":    DefaultConfigFileParamRust,
+	LangC:          DefaultConfigFileParamC,
+	LangCPP11:      DefaultConfigFileParamCpp,
+	LangCPP14:      DefaultConfigFileParamCpp11,
+	LangCPP:        DefaultConfigFileParamCpp14,
+	LangJava:       DefaultConfigFileParamJava,
+	LangPython:     DefaultConfigFileParamPy,
+	LangPython3:    DefaultConfigFileParamPy3,
+	LangD:          DefaultConfigFileParamD,
+	LangCSharp:     DefaultConfigFileParamCSharp,
+	LangGo:         DefaultConfigFileParamGo,
+	LangJavascript: DefaultConfigFileParamJavaScript,
+	LangPHP:        DefaultConfigFileParamPhp,
+	LangScala:      DefaultConfigFileParamScala,
+	LangHaskel:     DefaultConfigFileParamHaskell,
+	LangOCaml:      DefaultConfigFileParamOCaml,
+	LangKotlin:     DefaultConfigFileParamKotlin,
+	LangRuby:       DefaultConfigFileParamRuby,
+	LangRust:       DefaultConfigFileParamRust,
 }

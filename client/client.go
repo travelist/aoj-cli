@@ -15,15 +15,21 @@ import (
 type AOJClient struct {
 	// Base API endpoint URL
 	APIEndpointURL *url.URL
-
 	// Data API endpoint URL
 	DataAPIEndpointURL *url.URL
-	HTTPClient         *http.Client
-	username           string
-	password           string
+
+	// Authentication token
+	Token string
+	// client
+	httpClient *http.Client
 }
 
-func NewClient(baseEndpointURL string, dataEndpointUrl string, httpClient *http.Client) (*AOJClient, error) {
+func NewClient(
+	baseEndpointURL string,
+	dataEndpointUrl string,
+	httpClient *http.Client,
+	token string) (*AOJClient, error) {
+
 	parsedBaseURL, e := url.ParseRequestURI(baseEndpointURL)
 	if e != nil {
 		return nil, fmt.Errorf("failed to parse url: %s\n", baseEndpointURL)
@@ -36,7 +42,8 @@ func NewClient(baseEndpointURL string, dataEndpointUrl string, httpClient *http.
 	client := &AOJClient{
 		APIEndpointURL:     parsedBaseURL,
 		DataAPIEndpointURL: parsedDataURL,
-		HTTPClient:         httpClient,
+		httpClient:         httpClient,
+		Token:              token,
 	}
 
 	return client, nil
@@ -59,6 +66,8 @@ func (client *AOJClient) newAPIRequest(
 	}
 
 	req = req.WithContext(ctx)
+	req.Header.Set("Content-Type", "application/json;charset=UTF-8")
+	req.AddCookie(&http.Cookie{Name: "JSESSIONID", Value: client.Token})
 	return req, nil
 }
 
@@ -77,11 +86,13 @@ func (client *AOJClient) newDataRequest(
 	}
 
 	req = req.WithContext(ctx)
+	req.Header.Set("Content-Type", "application/json;charset=UTF-8")
+	req.AddCookie(&http.Cookie{Name: "JSESSIONID", Value: client.Token})
 	return req, nil
 }
 
 func (client *AOJClient) send(request *http.Request, result interface{}) error {
-	res, e := client.HTTPClient.Do(request)
+	res, e := client.httpClient.Do(request)
 	if e != nil {
 		return e
 	}

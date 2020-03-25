@@ -7,6 +7,22 @@ import (
 	"net/http"
 )
 
+func (client *AOJClient) FindRecentSubmissionRecords(ctx context.Context) (response.SubmissionRecordsResponse, error) {
+	path := "/submission_records/recent"
+
+	req, e := client.newAPIRequest(ctx, http.MethodGet, path, nil)
+	if e != nil {
+		return nil, e
+	}
+
+	var res response.SubmissionRecordsResponse
+	if e := client.send(req, &res); e != nil {
+		return nil, e
+	}
+
+	return res, e
+}
+
 func (client *AOJClient) Submit(ctx context.Context, body request.SubmitRequest) (
 	*response.SubmitResponse, error) {
 

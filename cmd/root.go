@@ -2,11 +2,13 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/travelist/aoj-cli/client"
 	"github.com/travelist/aoj-cli/cmd/conf"
 	"net/http"
+	"path/filepath"
 )
 
 // default values
@@ -23,7 +25,7 @@ var (
 	hasReadConfigFile = false
 
 	rootCmd = &cobra.Command{
-		Use:           "common",
+		Use:           "aoj",
 		Short:         "A command-line tool for Aizu Online Judge (AOJ)",
 		SilenceErrors: true,
 		SilenceUsage:  true,
@@ -47,16 +49,23 @@ func newDefaultClient() (*client.AOJClient, error) {
 	endpointURL := viper.GetString(configKeyBaseAPIUrl)
 	dataEndpointURL := viper.GetString(configKeyDataAPIUrl)
 	httpClient := &http.Client{}
-	return client.NewClient(endpointURL, dataEndpointURL, httpClient)
+	return client.NewClient(endpointURL, dataEndpointURL, httpClient, conf.GetSession())
 }
 
 // read and initialize configuration
 func initConfig() {
-	viper.AddConfigPath(conf.ConfigDirPath())
+	confPath := filepath.Join(conf.ConfigDirPath(), "config.toml")
+	viper.SetConfigFile(confPath)
 	viper.SetConfigType("toml")
 	if e := viper.ReadInConfig(); e != nil {
-		fmt.Printf("Warning: No configuration file. Please execute 'aoj init' to create it\n")
+		fmt.Printf("[%s] Invalid configuration. Please check %s or execute '%s' to initialise it: %v\n",
+			color.YellowString("WARNING"),
+			color.BlueString("confPath"),
+			color.RedString("aoj init"),
+			e,
+		)
 		return
 	}
+
 	hasReadConfigFile = true
 }

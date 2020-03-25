@@ -3,8 +3,12 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
+	"github.com/travelist/aoj-cli/client"
 	"github.com/travelist/aoj-cli/client/request"
+	"github.com/travelist/aoj-cli/client/response"
+	"github.com/travelist/aoj-cli/cmd/boilerplate"
 	"github.com/travelist/aoj-cli/cmd/conf"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
@@ -12,6 +16,8 @@ import (
 	"path/filepath"
 	"time"
 )
+
+const defaultSubmissionURL = "https://onlinejudge.u-aizu.ac.jp/recent_judges"
 
 func init() {
 	rootCmd.AddCommand(submitCmd)
@@ -39,21 +45,18 @@ var submitCommand = func(command *cobra.Command, args []string) {
 
 	client, e := newDefaultClient()
 	if e != nil {
-		fmt.Errorf("could not create a client %v\n", e)
+		fmt.Printf("could not create a client %v\n", e)
 		os.Exit(1)
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-	defer cancel()
-
-	_, e = client.Login(ctx, request.LoginRequest{
-		ID:       conf.GetGeneralUsername(),
-		Password: conf.GetGeneralPassword(),
-	})
-
-	if e != nil {
-		fmt.Errorf("authentication failed: %v\n", e)
-		os.Exit(1)
+	if client.IsAuthenticated() {
+		fmt.Printf("Loaded session from %s\n", filepath.Join(conf.ConfigDirPath(), conf.SessionFileName))
+	} else {
+		if e := askAuthentication(client); e != nil {
+			fmt.Printf("%s : coule not authenticate user %v\n",
+				color.RedString("Authentication Failed"), e)
+			os.Exit(1)
+		}
 	}
 
 	sourceCode, e := readSubmitFile()
@@ -62,13 +65,21 @@ var submitCommand = func(command *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
+	lang := conf.GetSubmitLanguage()
+	if _, ok := boilerplate.ValidLanguageSet[lang]; !ok {
+		fmt.Printf("%s %s %s\n",
+			color.YellowString("WARNING:"),
+			color.YellowString(lang),
+			color.YellowString("seems invalid. Please check [submit].language configuration."))
+	}
+
 	req := request.SubmitRequest{
 		ProblemID:  meta.ProblemId,
-		Language:   conf.GetGeneralLanguage(),
+		Language:   lang,
 		SourceCode: sourceCode,
 	}
 
-	ctx, cancel = context.WithTimeout(context.Background(), 15*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
 	result, e := client.Submit(ctx, req)
@@ -77,7 +88,59 @@ var submitCommand = func(command *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	fmt.Printf("Submission Success: %s\n", result.Token)
+	ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	records, e := client.FindRecentSubmissionRecords(ctx)
+	if e != nil {
+		fmt.Printf("%s\n", color.RedString(e.Error()))
+		fmt.Printf("%s Check %s\n",
+			color.GreenString("DONE!"),
+			color.BlueString(defaultSubmissionURL))
+	} else {
+		fmt.Printf("%s Check %s\n",
+			color.GreenString("DONE!"),
+			color.BlueString(findSubmissionURL(records, result.Token)))
+	}
+}
+
+func findSubmissionURL(records response.SubmissionRecordsResponse, token string) string {
+	if records == nil || len(token) == 0 {
+		return defaultSubmissionURL
+	}
+
+	for _, v := range records {
+		if v.Token == token {
+			return fmt.Sprintf("https://onlinejudge.u-aizu.ac.jp/status/users/%s/submissions/1/%s/judge/%d/%s",
+				v.UserID, v.ProblemID, v.JudgeID, v.Language)
+		}
+	}
+
+	return defaultSubmissionURL
+}
+
+func askAuthentication(client *client.AOJClient) error {
+	username, e := askUsername()
+	if e != nil {
+		return e
+	}
+	password, e := askPassword()
+	if e != nil {
+		return e
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	_, e = client.Login(ctx, request.LoginRequest{
+		ID:       username,
+		Password: password,
+	})
+	if e != nil {
+		return e
+	}
+
+	conf.SaveSession(client.Token)
+	return nil
 }
 
 func readSubmitFile() (string, error) {
@@ -102,7 +165,7 @@ func ReadMetadata(path string) (*ProblemMetadata, error) {
 	}
 
 	var metadata ProblemMetadata
-	e = yaml.Unmarshal(yamlFile, metadata)
+	e = yaml.Unmarshal(yamlFile, &metadata)
 	if e != nil {
 		return nil, fmt.Errorf("could not parse %s: %v ", path, e)
 	}

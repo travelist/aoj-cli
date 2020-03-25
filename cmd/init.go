@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
+	"github.com/travelist/aoj-cli/cmd/boilerplate"
 	"github.com/travelist/aoj-cli/cmd/conf"
-	tmpl2 "github.com/travelist/aoj-cli/cmd/boilerplate"
 	"golang.org/x/crypto/ssh/terminal"
 	"os"
 	"path/filepath"
@@ -20,7 +20,7 @@ func init() {
 
 var initCmd = &cobra.Command{
 	Use:   "init",
-	Short: "initialize and configure aoj-cli",
+	Short: "Setup aoj-cli",
 	Run:   initCommand,
 }
 
@@ -48,25 +48,14 @@ var initCommand = func(command *cobra.Command, args []string) {
 	}
 	defer file.Close()
 
-	tp := template.Must(template.New("AOJConfig").Parse(tmpl2.ConfigFileTemplate))
+	tp := template.Must(template.New("AOJConfig").Parse(boilerplate.ConfigFileTemplate))
 
 	lang, e := askLanguage()
 	if e != nil {
 		return
 	}
-	username, e := askUsername()
-	if e != nil {
-		return
-	}
 
-	password, e := askPassword()
-	if e != nil {
-		return
-	}
-
-	param, _ := tmpl2.LanguageToDefaultConfigParam[lang]
-	param.Username = username
-	param.Password = password
+	param, _ := boilerplate.LanguageToDefaultConfigParam[lang]
 	tp.Execute(file, param)
 
 	templateFilePath := conf.GetGenTemplateFile()
@@ -76,7 +65,7 @@ var initCommand = func(command *cobra.Command, args []string) {
 		return
 	}
 	defer templateFile.Close()
-	templateFile.Write([]byte(tmpl2.LanguageToDefaultTemplate[lang]))
+	templateFile.Write([]byte(boilerplate.LanguageToDefaultTemplate[lang]))
 
 	fmt.Printf("AOJ CLI is successfully initialised. Check %s\n", color.GreenString(confDir))
 }
@@ -98,26 +87,27 @@ func ask(valid map[string]bool) (string, error) {
 			return response, nil
 		}
 
-		fmt.Printf("%s is not a valid value. Select from the following:\n", response)
+		fmt.Printf("%s is not a valid value. Select from the following:\n", color.RedString(response))
+		langs := []string{}
 		for key, _ := range valid {
-			fmt.Printf("%s\n", key)
+			langs = append(langs, color.GreenString(key))
 		}
+		fmt.Printf("[%s]\n", strings.Join(langs, ","))
+
 	}
 	return "", fmt.Errorf("unexpected const")
 }
 
 func askLanguage() (string, error) {
-	validLang := map[string]bool{}
 
 	fmt.Printf("Coding language? [")
 	langs := []string{}
-	for _, v := range tmpl2.ValidLanguage {
-		validLang[v] = true
-		langs = append(langs, v)
+	for _, v := range boilerplate.ValidLanguageList {
+		langs = append(langs, color.GreenString(v))
 	}
 	fmt.Printf("%s]\n", strings.Join(langs, ","))
 
-	language, e := ask(validLang)
+	language, e := ask(boilerplate.ValidLanguageSet)
 	if e != nil {
 		return "", e
 	}
@@ -126,7 +116,7 @@ func askLanguage() (string, error) {
 }
 
 func askUsername() (string, error) {
-	fmt.Printf("Username?\n")
+	fmt.Printf("Username: ")
 	var response string
 	if _, e := fmt.Scanln(&response); e != nil {
 		fmt.Printf("Unexpected const: %s\n", e.Error())
@@ -137,7 +127,7 @@ func askUsername() (string, error) {
 }
 
 func askPassword() (string, error) {
-	fmt.Printf("Password?\n")
+	fmt.Printf("Password: ")
 	pswd, e := terminal.ReadPassword(syscall.Stdin)
 	return string(pswd), e
 }
