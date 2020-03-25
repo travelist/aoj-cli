@@ -1,4 +1,4 @@
-# AOJ CLI
+# AOJ CLI (BETA)
 A command-line tool for [Aizu Online Judge (AOJ)](https://onlinejudge.u-aizu.ac.jp/)
 
 This is a minimal CLI tool for just doing 3 things:
@@ -23,11 +23,10 @@ aoj init
 Generate a boilerplate code and test cases
 
 ```shell
-aoj gen <PROBLEM-ID>
-# Create a problem directory under current dir
+aoj gen [PROBLEM-ID]
 ```
 
-Run tests
+Test the solution
 
 ```shell
 aoj test
