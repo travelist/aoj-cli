@@ -120,7 +120,13 @@ func executeBeforeAll() error {
 	a := strings.Split(c, " ")
 
 	var out, err bytes.Buffer
-	command := exec.Command(a[0], a[1:]...)
+	var command *exec.Cmd
+	if len(a) == 1 {
+		command = exec.Command(a[0])
+	} else {
+		command = exec.Command(a[0], a[1:]...)
+	}
+
 	command.Stdout = &out
 	command.Stderr = &err
 
@@ -135,15 +141,18 @@ func executeBeforeAll() error {
 	return nil
 }
 
-func executeBeforeEach() error {
+func executeBeforeEach() (e error) {
 	c := conf.GetTestBeforeEach()
 	if len(c) == 0 {
 		return nil
 	}
 
-	fmt.Printf("[%s] %s\n", color.GreenString("Before Each"), color.BlueString(c))
 	a := strings.Split(c, " ")
-	e := exec.Command(a[0], a[1:]...).Run()
+	if len(a) == 1 {
+		e = exec.Command(a[0]).Run()
+	} else {
+		e = exec.Command(a[0], a[1:]...).Run()
+	}
 
 	if e != nil {
 		return e
@@ -153,13 +162,23 @@ func executeBeforeEach() error {
 }
 
 func executeCommand(command []string, inputFilePath string) ([]byte, error) {
+	if len(command) == 0 {
+		return nil, fmt.Errorf("could not find test command")
+	}
+
 	in, e := os.Open(inputFilePath)
 	if e != nil {
 		return []byte{}, fmt.Errorf("cannot open %s, %v", inputFilePath, e)
 	}
 	defer in.Close()
 
-	c := exec.Command(command[0], command[1:]...)
+	var c *exec.Cmd
+	if len(command) == 1 {
+		c = exec.Command(command[0])
+	} else {
+		c = exec.Command(command[0], command[1:]...)
+	}
+
 	stdin, _ := c.StdinPipe()
 	io.Copy(stdin, in)
 	return c.Output()
@@ -195,14 +214,18 @@ func getFileBody(filePath string) (string, error) {
 	return string(body), nil
 }
 
-func executeAfterEach() error {
+func executeAfterEach() (e error) {
 	c := conf.GetTestAfterEach()
 	if len(c) == 0 {
 		return nil
 	}
 
 	a := strings.Split(c, " ")
-	e := exec.Command(a[0], a[1:]...).Run()
+	if len(c) == 1 {
+		e = exec.Command(a[0]).Run()
+	} else {
+		e = exec.Command(a[0], a[1:]...).Run()
+	}
 
 	if e != nil {
 		return e
@@ -267,15 +290,18 @@ func listTestOutputFiles() []string {
 	return testInputFiles
 }
 
-func executeAfterAll() error {
+func executeAfterAll() (e error) {
 	c := conf.GetTestAfterAll()
 	if len(c) == 0 {
 		return nil
 	}
-	fmt.Printf("[%s] %s\n", color.GreenString("After Each"), color.BlueString(c))
 
 	a := strings.Split(c, " ")
-	e := exec.Command(a[0], a[1:]...).Run()
+	if len(a) == 1 {
+		e = exec.Command(a[0]).Run()
+	} else {
+		e = exec.Command(a[0], a[1:]...).Run()
+	}
 
 	if e != nil {
 		return e
