@@ -18,9 +18,6 @@ Initialize configuration (Required only once)
 
 ```shell
 aoj init
-# > Username?
-# > Password?
-# > Coding Language? (cpp, java, py)
 ```
 
 Generate a boilerplate code and test cases
@@ -48,11 +45,6 @@ Default config file path: `~/.aoj-cli/config.toml`
 Default template file path: `~/.aoj-cli/template.txt`
 
 ```toml
-[general]
-language = "cpp"
-username = "username"
-password = "password"
-
 [gen]
 template_file = "$HOME/.aoj-cli/template.txt"
 destination_file_name = "main.cpp"
@@ -65,14 +57,12 @@ after_each=""
 after_all=""
 
 [submit]
+language = "C++"
 source_file_name = "main.cpp"
 ```
 
 | parameter| description |  |
 |----------|-------------|--|
-| general.language | programming language | ex: `java`, `cpp` - See the list bellow. |
-| general.username | Username | |
-| general.password | password | |
 | gen.template_file | path to a template file | |
 | gen.destination_file_name | file name of a generated code | |
 | test.before_all | command to be executed once before all tests | |
@@ -80,31 +70,9 @@ source_file_name = "main.cpp"
 | test.test_commands | command to execute a solution | |
 | test.after_each | command to be executed after each test | |
 | test.after_all | command to be executed once after all tests | |
+| submit.language | programming language | ex: `JAVA`, `C++` |
 | submit.source_file_name | source file to be submitted | |
-
-Available options of `general.language`:
-
-- `c`
-- `cpp`
-- `cpp11`
-- `cpp14`
-- `java`
-- `py`
-- `py3`
-- `d`
-- `csharp`
-- `go`
-- `js`
-- `php`
-- `scala`
-- `haskell`
-- `ocaml`
-- `kotlin`
-- `ruby`
-- `rust`
-- (Feel free to open an issue when you need other options)
 
 ## TODO
 
-- [ ] Support available languages
-- [ ] Remove username and password from configuration file (security)
+- [ ] `TLE` Check
