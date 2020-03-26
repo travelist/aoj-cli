@@ -7,6 +7,8 @@ This is a minimal CLI tool for just doing 3 things:
 - Test your solution with the test cases
 - Submit the solution to AOJ
 
+<img src="https://raw.githubusercontent.com/travelist/aoj-cli/master/doc/animation.gif" height="340px">
+
 ## Installation
 
 ```shell
