@@ -10,6 +10,8 @@ This is a minimal CLI tool for just doing 3 things:
 ## Installation
 
 ```shell
+brew tap travelist/homebrew-aoj-cli
+brew install aoj
 ```
 
 ## Usage
