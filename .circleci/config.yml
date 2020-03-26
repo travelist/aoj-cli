@@ -25,8 +25,23 @@ jobs:
   release:
     docker:
       - image: circleci/golang:1.14
+    working_directory: /go/src/github.com/travelist/aoj-cli
     steps:
       - checkout
+      - restore_cache:
+          key: gopkg-{{ .Branch }}-{{ checksum "Gopkg.lock" }}
+          paths:
+            - vendor
+      - run:
+          name: download-libraries
+          command: curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+      - run:
+          name: download dependencies
+          command: dep ensure
+      - save_cache:
+          key: gopkg-{{ .Branch }}-{{ checksum "Gopkg.lock" }}
+          paths:
+            - vendor
       - run: curl -sL https://git.io/goreleaser | bash
 
 workflows:
