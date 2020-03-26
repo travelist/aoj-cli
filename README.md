@@ -1,6 +1,6 @@
 # AOJ CLI [![CircleCI](https://circleci.com/gh/travelist/aoj-cli.svg?style=svg)](https://circleci.com/gh/travelist/aoj-cli)
 
-[<p dir='rtl' align="right;">日本語(Japanese)</p>](https://github.com/travelist/aoj-cli/#日本語(Japanese))
+[<p dir='rtl' align="right;">日本語(Japanese)</p>](https://github.com/travelist/aoj-cli/#%E6%97%A5%E6%9C%AC%E8%AA%9Ejapanese)
 
 A command-line tool for [Aizu Online Judge (AOJ)](https://onlinejudge.u-aizu.ac.jp/)
 
