@@ -5,5 +5,7 @@ LDFLAGS         := "-X github.com/travelist/aoj-cli/cmd.Version=${VERSION} -X gi
 
 .PHONY: build
 build:
-	go build -ldflags $(LDFLAGS) -o aoj
+	@go build -ldflags $(LDFLAGS) -o aoj
 
+dry_release:
+	@goreleaser --snapshot --skip-publish --rm-dist

@@ -128,6 +128,6 @@ func askUsername() (string, error) {
 
 func askPassword() (string, error) {
 	fmt.Printf("Password: ")
-	pswd, e := terminal.ReadPassword(syscall.Stdin)
+	pswd, e := terminal.ReadPassword(int(syscall.Stdin)) // Windows require casting stdin into int type.
 	return string(pswd), e
 }

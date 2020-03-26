@@ -1,18 +1,25 @@
 builds:
-  - env:
+  - binary: aoj
+    env:
       - CGO_ENABLED=0
     ldflags:
       - -X github.com/travelist/aoj-cli/cmd.Version={{.Version}}
       - -X github.com/travelist/aoj-cli/cmd.Revision={{.ShortCommit}}
+    goos:
+      - linux
+      - darwin
+      - windows
+    ignore:
+      - goos: darwin
+        goarch: 386
+      - goos: windows
+        goarch: 386
 archives:
   - replacements:
       darwin: macOS
       linux: Linux
-      windows: Windows
-      386: 32-bit
-      amd64: 64-bit
 checksum:
-  name_template: 'checksums.txt'
+  name_template: '{{ .ProjectName }}-{{ .Tag }}-checksums.txt'
 snapshot:
   name_template: "{{ .Tag }}-next"
 changelog:
@@ -21,3 +28,13 @@ changelog:
     exclude:
       - '^docs:'
       - '^test:'
+brews:
+  - name: aoj
+    github:
+      owner: travelist
+      name: homebrew-aoj-cli
+    commit_author:
+      name: travelist
+      email: komei.t.f@gmail.com
+    homepage: "https://github.com/travelist/aoj-cli"
+    description: "A command-line tool for Aizu Online Judge (AOJ)"
