@@ -1,4 +1,4 @@
-# AOJ CLI (BETA) [![CircleCI](https://circleci.com/gh/travelist/aoj-cli.svg?style=svg)](https://circleci.com/gh/travelist/aoj-cli)
+# AOJ CLI [![CircleCI](https://circleci.com/gh/travelist/aoj-cli.svg?style=svg)](https://circleci.com/gh/travelist/aoj-cli)
 
 A command-line tool for [Aizu Online Judge (AOJ)](https://onlinejudge.u-aizu.ac.jp/)
 
