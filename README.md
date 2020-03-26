@@ -1,4 +1,5 @@
-# AOJ CLI (BETA)
+# AOJ CLI (BETA) [![CircleCI](https://circleci.com/gh/travelist/aoj-cli.svg?style=svg)](https://circleci.com/gh/travelist/aoj-cli)
+
 A command-line tool for [Aizu Online Judge (AOJ)](https://onlinejudge.u-aizu.ac.jp/)
 
 This is a minimal CLI tool for just doing 3 things:
@@ -31,6 +32,7 @@ aoj gen [PROBLEM-ID]
 Test the solution
 
 ```shell
+# cd ./[PROBLEM-ID]
 aoj test
 ```
 
