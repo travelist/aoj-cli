@@ -34,14 +34,18 @@ var testCommand = func(command *cobra.Command, args []string) {
 	}
 
 	if e := executeBeforeAll(); e != nil {
+		color.Set(color.FgRed)
 		fmt.Printf("%v\n", e)
+		color.Unset()
 		os.Exit(1)
 	}
 
 	testIns := listTestInputFiles()
 	testOuts := listTestOutputFiles()
 	if len(testIns) != len(testOuts) {
+		color.Set(color.FgRed)
 		fmt.Printf("Unmatch the number of in_{}.txt files and of out_{}.txt files\n")
+		color.Unset()
 		fmt.Printf("input files: %s\n", strings.Join(testIns, ","))
 		fmt.Printf("output files: %s\n", strings.Join(testOuts, ","))
 		os.Exit(1)
@@ -56,20 +60,26 @@ var testCommand = func(command *cobra.Command, args []string) {
 
 	for index, _ := range testIns {
 		if e := executeBeforeEach(); e != nil {
+			color.Set(color.FgRed)
 			fmt.Printf("%v\n", e)
+			color.Unset()
 			os.Exit(1)
 		}
 
 		// TODO TLE check
 		out, e := executeCommand(strings.Split(c, " "), testIns[index])
 		if e != nil {
+			color.Set(color.FgRed)
 			fmt.Printf("%v\n", e)
+			color.Unset()
 			os.Exit(1)
 		}
 
 		success, e := checkOutput(testOuts[index], out)
 		if e != nil {
+			color.Set(color.FgRed)
 			fmt.Printf("%v\n", e)
+			color.Unset()
 			os.Exit(1)
 		}
 
@@ -93,18 +103,22 @@ var testCommand = func(command *cobra.Command, args []string) {
 		}
 
 		if e := executeAfterEach(); e != nil {
+			color.Unset()
 			fmt.Printf("%v\n", e)
+			color.Set(color.FgRed)
 			os.Exit(1)
 		}
 	}
 
 	if e := executeAfterAll(); e != nil {
+		color.Set(color.FgRed)
 		fmt.Printf("%v\n", e)
+		color.Unset()
 		os.Exit(1)
 	}
 
 	if allSuccess {
-		fmt.Printf("%s\n", color.GreenString("All AC!"))
+		fmt.Printf("%s\n", color.GreenString("PASSED ALL!"))
 	} else {
 		fmt.Printf("%s\n", color.RedString("Some cases are WRONG ANSWER"))
 	}
@@ -173,15 +187,27 @@ func executeCommand(command []string, inputFilePath string) ([]byte, error) {
 	defer in.Close()
 
 	var c *exec.Cmd
+
 	if len(command) == 1 {
 		c = exec.Command(command[0])
 	} else {
 		c = exec.Command(command[0], command[1:]...)
 	}
 
+	var stderr bytes.Buffer
+	c.Stderr = &stderr
+
 	stdin, _ := c.StdinPipe()
 	io.Copy(stdin, in)
-	return c.Output()
+
+	b, e := c.Output()
+	if e != nil {
+		color.Set(color.FgRed)
+		fmt.Printf("%v\n", stderr.String())
+		color.Unset()
+		return b, e
+	}
+	return b, e
 }
 
 func checkOutput(expectedOutputFilePath string, output []byte) (bool, error) {
