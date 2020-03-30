@@ -77,14 +77,10 @@ var genCommand = func(command *cobra.Command, args []string) {
 	}
 
 	genFileName := conf.GetGenDestinationFileName()
-	sourceFilePath := filepath.Join(problemDir, genFileName)
-	fmt.Println(genFileName)
-	fmt.Println(sourceFilePath)
-
-	_, e = os.Stat(sourceFilePath)
-	fmt.Println(e)
+	dstFilePAth := filepath.Join(problemDir, genFileName)
+	_, e = os.Stat(dstFilePAth)
 	if os.IsNotExist(e) {
-		if e := generateSourceCodeFile(sourceFilePath); e != nil {
+		if e := generateSourceCodeFile(dstFilePAth); e != nil {
 			fmt.Printf("%v\n", e)
 			os.Exit(1)
 		}
@@ -134,7 +130,9 @@ func generateTestCaseFiles(problemDir string, testCaseSample response.TestCaseSa
 func generateSourceCodeFile(sourceFilePath string) error {
 	sourceFile, e := os.OpenFile(sourceFilePath, os.O_RDWR|os.O_CREATE, 0600)
 	if e != nil {
+		color.Set(color.FgRed)
 		fmt.Printf("Could not create/open a config file at %s : %s\n", sourceFilePath, e.Error())
+		color.Unset()
 		return e
 	}
 	defer sourceFile.Close()
@@ -143,13 +141,17 @@ func generateSourceCodeFile(sourceFilePath string) error {
 	if _, e := os.Stat(TemplateFilePath); os.IsNotExist(e) {
 		lang := conf.GetGeneralLanguage()
 		sourceFile.Write([]byte(tmpl2.LanguageToDefaultTemplate[lang]))
+		color.Set(color.FgRed)
 		fmt.Printf("Could not find a template file at %s\n", TemplateFilePath)
+		color.Unset()
 		return nil
 	}
 
-	templateFile, e := os.OpenFile(TemplateFilePath, os.O_RDWR|os.O_CREATE, 0600)
-	if e == nil {
-		fmt.Printf("Could not open a template file: %s\n", TemplateFilePath)
+	templateFile, e := os.OpenFile(TemplateFilePath, os.O_RDONLY, 0600)
+	if e != nil {
+		color.Set(color.FgRed)
+		fmt.Printf("Could not open %s: %v\n", TemplateFilePath, e)
+		color.Unset()
 		lang := conf.GetGeneralLanguage()
 		sourceFile.Write([]byte(tmpl2.LanguageToDefaultTemplate[lang]))
 		return nil
@@ -157,7 +159,9 @@ func generateSourceCodeFile(sourceFilePath string) error {
 	defer templateFile.Close()
 
 	if _, e = io.Copy(sourceFile, templateFile); e != nil {
+		color.Set(color.FgRed)
 		fmt.Printf("%s\n", e.Error())
+		color.Unset()
 	}
 
 	return nil
