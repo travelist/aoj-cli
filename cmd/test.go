@@ -59,6 +59,8 @@ var testCommand = func(command *cobra.Command, args []string) {
 	allSuccess := true
 
 	for index, _ := range testIns {
+		fmt.Printf("# in_%d.txt ... ", index+1)
+
 		if e := executeBeforeEach(); e != nil {
 			color.Set(color.FgRed)
 			fmt.Printf("%v\n", e)
@@ -69,6 +71,7 @@ var testCommand = func(command *cobra.Command, args []string) {
 		// TODO TLE check
 		out, e := executeCommand(strings.Split(c, " "), testIns[index])
 		if e != nil {
+			fmt.Println()
 			color.Set(color.FgRed)
 			fmt.Printf("%v\n", e)
 			color.Unset()
@@ -84,10 +87,10 @@ var testCommand = func(command *cobra.Command, args []string) {
 		}
 
 		if success {
-			fmt.Printf("# in_%d.txt ... %s\n", index+1, color.GreenString("AC"))
+			fmt.Printf("%s\n", color.GreenString("AC"))
 		} else {
 			allSuccess = false
-			fmt.Printf("# in_%d.txt ... %s\n", index+1, color.RedString("WA"))
+			fmt.Printf("%s\n", color.RedString("WA"))
 
 			fmt.Printf("%s\n", color.MagentaString("[Input]"))
 			in, _ := getFileBody(testIns[index])
@@ -201,12 +204,14 @@ func executeCommand(command []string, inputFilePath string) ([]byte, error) {
 	io.Copy(stdin, in)
 
 	b, e := c.Output()
-	if e != nil {
-		color.Set(color.FgRed)
-		fmt.Printf("%v\n", stderr.String())
-		color.Unset()
-		return b, e
+	if e != nil || stderr.Len() > 0 {
+		return b, &ExecError{
+			err:    e,
+			stdout: b,
+			stderr: stderr,
+		}
 	}
+
 	return b, e
 }
 
@@ -334,4 +339,22 @@ func executeAfterAll() (e error) {
 	}
 
 	return nil
+}
+
+type ExecError struct {
+	err    error
+	stdout []byte
+	stderr bytes.Buffer
+}
+
+func (e ExecError) Error() string {
+	if e.stderr.Len() > 0 {
+		return e.stderr.String()
+	}
+
+	if e.err != nil {
+		return e.err.Error()
+	}
+
+	return "Command execution error"
 }
